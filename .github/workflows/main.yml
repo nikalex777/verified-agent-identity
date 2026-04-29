@@ -1,15 +1,3 @@
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Включаем Node 24 заранее
-    steps:
-      - uses: actions/checkout@v4 # Обновлено с v3 на v4
-      - uses: actions/setup-node@v4 # Обновлено с v3 на v4
-        with:
-          node-version: '24'
-  
-
 name: Verify Human Identity
 
 on:
@@ -24,18 +12,21 @@ on:
         required: true
         default: 'nikalex777 AI Agent'
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Включаем поддержку Node 24
+
 jobs:
   verify:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Обновлено до v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4 # Обновлено до v4
         with:
-          node-version: '20'
+          node-version: '24' # Обновлено до 24
 
       - name: Step 1 - Install ClawHub skill
         run: npx clawhub@latest install verified-agent-identity
@@ -50,4 +41,4 @@ jobs:
 
       - name: Step 3 - Link Human to Agent
         run: |
-          node scripts/manualLinkHumanToAgent.js --challenge '{"name": "nikalex777", "description": "nikalex777 AI Agent"}'
+          node scripts/manualLinkHumanToAgent.js --challenge '{"name": "${{ github.event.inputs.agent_name }}", "description": "${{ github.event.inputs.agent_description }}"}'
